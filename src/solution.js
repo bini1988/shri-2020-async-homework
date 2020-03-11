@@ -69,7 +69,44 @@
     .then(([isNegative, g]) => multiply(g, isNegative ? -0.5 : 0.5));
   }
 
+    /**
+   * Посчитать площадь треугольника
+   * @description С использованием Async
+   * @param {number} x1
+   * @param {number} y1
+   * @param {number} x2
+   * @param {number} y2
+   * @param {number} x3
+   * @param {number} y3
+   */
+  async function calcAreaOfTriangle_async(x1, y1, x2, y2, x3, y3) {
+    const subtract = promisify(window.Homework.subtract);
+    const multiply = promisify(window.Homework.multiply);
+    const less = promisify(window.Homework.less);
+
+    const [a, b, c, d] =
+      await Promise.all([
+        subtract(x1, x3),
+        subtract(y1, y3),
+        subtract(x2, x3),
+        subtract(y2, y3),
+      ]);
+
+    const [e, f] =
+      await Promise.all([
+        multiply(a, d),
+        multiply(b, c),
+      ]);
+
+    const g = await subtract(e, f);
+    const isNegative = await less(g, 0);
+    const area = await multiply(g, isNegative ? -0.5 : 0.5);
+
+    return area;
+  }
+
   window.calcAreaOfTriangle_cb = calcAreaOfTriangle_cb;
   window.calcAreaOfTriangle_promise = calcAreaOfTriangle_promise;
+  window.calcAreaOfTriangle_async = calcAreaOfTriangle_async;
 
 })(window);
