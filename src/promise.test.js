@@ -67,4 +67,56 @@ describe('Бонусное задание', function() {
       });
     });
   });
+  describe('Promise.prototype.finally', function() {
+    it('Promise.prototype.finally should call cb after resolve', function() {
+      let _resolve = null;
+      let _reject = null;
+      let _isFinallyCalled = false;
+
+      const promise =
+        new Promise((resolve, reject) => {
+          _resolve = resolve;
+          _reject = reject;
+        });
+
+      _resolve("resolve");
+
+      return promise
+        .then(value => {
+          chai.assert.equal(value, "resolve");
+          return value;
+        })
+        ._finally(() => { _isFinallyCalled = true; })
+        .then(value => {
+          chai.assert.equal(_isFinallyCalled, true);
+          chai.assert.equal(value, "resolve");
+          return value;
+        });
+    });
+    it('Promise.prototype.finally should call cb after reject', function() {
+      let _resolve = null;
+      let _reject = null;
+      let _isFinallyCalled = false;
+
+      const promise =
+        new Promise((resolve, reject) => {
+          _resolve = resolve;
+          _reject = reject;
+        });
+
+      _reject("reject");
+
+      return promise
+        .catch(error => {
+          chai.assert.equal(error, "reject");
+          return error;
+        })
+        ._finally(() => { _isFinallyCalled = true; })
+        .then(error => {
+          chai.assert.equal(_isFinallyCalled, true);
+          chai.assert.equal(error, "reject");
+          return error;
+        });
+    });
+  });
 });
