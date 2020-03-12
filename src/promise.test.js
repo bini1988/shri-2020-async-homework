@@ -42,4 +42,29 @@ describe('Бонусное задание', function() {
       });
     });
   });
+  describe('Promise.allSettled', function() {
+    it('Promise.allSettled should resolve', function() {
+      let resolveA = null;
+      let resolveB = null;
+      let rejectC = null;
+
+      const promiseA = new Promise(resolve => { resolveA = resolve; });
+      const promiseB = new Promise(resolve => { resolveB = resolve; });
+      const promiseC = new Promise((_, reject) => { rejectC = reject; });
+
+      const promise = Promise._allSettled([promiseA, promiseB, promiseC]);
+
+      resolveA("resolveA");
+      resolveB("resolveB");
+      rejectC("rejectC");
+
+      return promise.then(value => {
+        chai.expect(value).to.eql([
+          { status: "fulfilled", value: "resolveA" },
+          { status: "fulfilled", value: "resolveB" },
+          { status: "rejected", reason: "rejectC" },
+        ]);
+      });
+    });
+  });
 });

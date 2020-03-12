@@ -32,6 +32,39 @@ Promise._any = function (promises = []) {
   return promise;
 }
 
-Promise._allSettled = function () {}
+Promise._allSettled = function (promises = []) {
+  let _resolve = null;
+  let _results = [];
+  let _pendingCount = promises.length;
+
+  let tryResolveResults = () => {
+    if (_resolve && !_pendingCount) {
+      _resolve(_results);
+      _resolve = null;
+    }
+  };
+
+  let promise = new Promise(
+    resolve => { _resolve = resolve; }
+  );
+
+  promises.forEach((promise, index) => {
+    Promise.resolve(promise)
+      .then(value => {
+        _results[index] = { status: "fulfilled", value };
+        _pendingCount--;
+
+        tryResolveResults();
+      })
+      .catch(reason => {
+        _results[index] = { status: "rejected", reason };
+        _pendingCount--;
+
+        tryResolveResults();
+      });
+  });
+
+  return promise;
+}
 
 Promise.prototype._finally = function () {}
