@@ -68,12 +68,8 @@ Promise._allSettled = function (promises = []) {
 }
 
 Promise.prototype._finally = function (onFinally) {
-  function cb(params) {
-    if (typeof onFinally === "function") {
-      onFinally();
-    }
-    return params;
-  }
-
-  return this.then(cb, cb);
+  return this.then(
+    (value) => Promise.resolve(onFinally()).then(() => value),
+    (error) => Promise.resolve(onFinally()).then(() => { throw error }),
+  );
 }

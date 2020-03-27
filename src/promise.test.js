@@ -118,5 +118,26 @@ describe('Бонусное задание', function() {
           return error;
         });
     });
+    it('Promise.prototype.finally should call catch after reject', function() {
+      let _resolve = null;
+      let _reject = null;
+      let _isFinallyCalled = false;
+
+      const promise =
+        new Promise((resolve, reject) => {
+          _resolve = resolve;
+          _reject = reject;
+        });
+
+      _reject("reject");
+
+      return promise
+        ._finally(() => { _isFinallyCalled = true; })
+        .catch(error => {
+          chai.assert.equal(_isFinallyCalled, true);
+          chai.assert.equal(error, "reject");
+          return error;
+        });
+    });
   });
 });
